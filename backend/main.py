@@ -28,6 +28,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(health_router)
+app.include_router(agent_router)
 
 
 @app.get("/")
