@@ -1,0 +1,113 @@
+{
+  "name": "AI Agent Multi-Tasking System",
+  "short_name": "AI Agent",
+  "description": "Intelligent code debugging, analysis, and documentation generation with multi-task orchestration",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "categories": ["productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "/screenshot-1.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/screenshot-2.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Debug Code",
+      "short_name": "Debug",
+      "description": "Debug code in multiple languages",
+      "url": "/?action=debug",
+      "icons": [
+        {
+          "src": "/icon-debug-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Analyze Code",
+      "short_name": "Analyze",
+      "description": "Analyze code quality, security, and performance",
+      "url": "/?action=analyze",
+      "icons": [
+        {
+          "src": "/icon-analyze-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Generate Docs",
+      "short_name": "Docs",
+      "description": "Generate documentation for your code",
+      "url": "/?action=docs",
+      "icons": [
+        {
+          "src": "/icon-docs-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "code_file",
+          "accept": [
+            "text/*",
+            "application/json",
+            "application/x-python-source"
+          ]
+        }
+      ]
+    }
+  }
+}
