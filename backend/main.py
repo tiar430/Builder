@@ -5,6 +5,10 @@ from backend.config import settings
 from backend.database import init_db
 from backend.routers import health_router, agent_router
 from backend.mcp import mcp_manager
+from backend.services.llm_service import llm_service
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Initialize database
 init_db()
