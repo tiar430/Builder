@@ -10,6 +10,7 @@ An intelligent, open-source AI system for multi-language code debugging, analysi
 ## Features
 
 ✨ **Core Capabilities**
+
 - 🐛 **Multi-Language Debugging** - Debug code in 10+ programming languages
 - 🔍 **Code Analysis** - Security, performance, and quality analysis
 - 📚 **Auto Documentation** - Generate docs in multiple styles (Google, NumPy, Sphinx)
@@ -18,6 +19,7 @@ An intelligent, open-source AI system for multi-language code debugging, analysi
 - 📱 **PWA Support** - Install as app on mobile/desktop
 
 🚀 **Technical Excellence**
+
 - 🎯 **Offline Support** - Service worker with offline caching
 - 🔌 **MCP Integration** - Connect to Supabase, Neon, Linear, Notion, Sentry
 - 🧠 **Local AI First** - Ollama for privacy-focused local processing
@@ -100,6 +102,7 @@ Python • JavaScript • TypeScript • Java • Go • Rust • C/C++ • Ruby
 ### Installation
 
 1. **Clone and setup**
+
 ```bash
 git clone <repository>
 cd ai-agent-system
@@ -108,6 +111,7 @@ chmod +x scripts/setup.sh
 ```
 
 2. **Download LLM models (Ollama)**
+
 ```bash
 ollama pull mistral
 # Or use other models:
@@ -116,6 +120,7 @@ ollama pull mistral
 ```
 
 3. **Configure environment**
+
 ```bash
 cp .env.example .env
 # Edit .env with your settings:
@@ -126,6 +131,7 @@ cp .env.example .env
 4. **Start services**
 
 Terminal 1 - Backend:
+
 ```bash
 source venv/bin/activate
 python -m backend.main
@@ -133,6 +139,7 @@ python -m backend.main
 ```
 
 Terminal 2 - Frontend:
+
 ```bash
 source venv/bin/activate
 chainlit run frontend/app.py
@@ -144,16 +151,19 @@ chainlit run frontend/app.py
 ### Using Docker Compose
 
 **Development setup (minimal):**
+
 ```bash
 docker-compose --profile dev up
 ```
 
 **Full setup (with Ollama + PostgreSQL):**
+
 ```bash
 docker-compose up -d
 ```
 
 **Specific services:**
+
 ```bash
 # Backend + Ollama only
 docker-compose --profile ollama up
@@ -166,6 +176,7 @@ docker-compose down -v
 ```
 
 **Access:**
+
 - Frontend: http://localhost:8501
 - Backend API: http://localhost:8000
 - PostgreSQL: localhost:5432
@@ -174,6 +185,7 @@ docker-compose down -v
 ## API Documentation
 
 ### Debug Endpoint
+
 ```bash
 curl -X POST http://localhost:8000/agent/debug \
   -H "Content-Type: application/json" \
@@ -185,6 +197,7 @@ curl -X POST http://localhost:8000/agent/debug \
 ```
 
 ### Analyze Endpoint
+
 ```bash
 curl -X POST http://localhost:8000/agent/analyze \
   -H "Content-Type: application/json" \
@@ -196,6 +209,7 @@ curl -X POST http://localhost:8000/agent/analyze \
 ```
 
 ### Generate Docs Endpoint
+
 ```bash
 curl -X POST http://localhost:8000/agent/generate-docs \
   -H "Content-Type: application/json" \
@@ -208,16 +222,19 @@ curl -X POST http://localhost:8000/agent/generate-docs \
 ```
 
 ### WebSocket Real-time
+
 ```javascript
-const ws = new WebSocket('ws://localhost:8000/agent/ws/agent');
-ws.send(JSON.stringify({
-  agent_type: 'debugger',
-  session_id: 'user-123',
-  context: {
-    code: '...',
-    language: 'python'
-  }
-}));
+const ws = new WebSocket("ws://localhost:8000/agent/ws/agent");
+ws.send(
+  JSON.stringify({
+    agent_type: "debugger",
+    session_id: "user-123",
+    context: {
+      code: "...",
+      language: "python",
+    },
+  }),
+);
 ```
 
 ## Configuration
@@ -245,12 +262,14 @@ NEON_DATABASE_URL=your-connection-string
 ### Supported Models
 
 **Ollama Models:**
+
 - `mistral` (7B) - Recommended for balance
 - `llama2` (7B/13B) - Good for coding
 - `neural-chat` (7B) - Optimized for chat
 - `codellama` (7B/13B/34B) - Code-focused
 
 **Cloud APIs:**
+
 - Mistral: `mistral-small`, `mistral-medium`, `mistral-large`
 
 ## MCP Integration
@@ -258,22 +277,26 @@ NEON_DATABASE_URL=your-connection-string
 Connect to external services for enhanced capabilities:
 
 ### Supabase
+
 ```env
 SUPABASE_URL=https://xxxxx.supabase.co
 SUPABASE_KEY=eyJxxx...
 ```
 
 ### Neon Database
+
 ```env
 NEON_DATABASE_URL=postgresql://user:password@region.neon.tech/dbname
 ```
 
 ### Linear (Issue Tracking)
+
 ```env
 LINEAR_API_KEY=your-api-key
 ```
 
 ### Notion (Documentation)
+
 ```env
 NOTION_API_KEY=your-api-key
 ```
@@ -281,21 +304,25 @@ NOTION_API_KEY=your-api-key
 ## Usage Examples
 
 ### Debug Python Code
+
 1. Paste Python code with an error
 2. System analyzes syntax and logic errors
 3. Provides fixes with explanations
 
 ### Security Analysis
+
 1. Submit code for security review
 2. Identifies vulnerabilities
 3. Provides mitigation strategies
 
 ### Generate API Documentation
+
 1. Paste API endpoint code
 2. Select "API" doc type
 3. Get formatted documentation
 
 ### Multi-Task Orchestration
+
 1. Submit code once
 2. System runs debug + analysis + docs
 3. Get comprehensive results
@@ -327,6 +354,7 @@ NOTION_API_KEY=your-api-key
 ## Troubleshooting
 
 ### Ollama Connection Failed
+
 ```bash
 # Check if Ollama is running
 curl http://localhost:11434/api/tags
@@ -336,6 +364,7 @@ ollama serve
 ```
 
 ### Database Locked
+
 ```bash
 # Reset SQLite database
 rm agent_db.sqlite
@@ -343,6 +372,7 @@ rm agent_db.sqlite
 ```
 
 ### Memory Issues
+
 ```bash
 # For smaller models, use quantized versions
 ollama pull mistral:7b-text-q4_0
@@ -352,6 +382,7 @@ watch -n 1 'ps aux | grep ollama'
 ```
 
 ### WebSocket Connection Issues
+
 ```bash
 # Check backend is running
 curl http://localhost:8000/health
@@ -363,6 +394,7 @@ netstat -tuln | grep 8000
 ## Development
 
 ### Project Structure
+
 ```
 ai-agent-system/
 ├── backend/              # FastAPI application
@@ -379,6 +411,7 @@ ai-agent-system/
 ```
 
 ### Running Tests
+
 ```bash
 source venv/bin/activate
 pytest backend/
@@ -386,6 +419,7 @@ pytest backend/agents/
 ```
 
 ### Contributing
+
 1. Create feature branch: `git checkout -b feature/name`
 2. Commit changes: `git commit -am 'Add feature'`
 3. Push to branch: `git push origin feature/name`
@@ -393,12 +427,12 @@ pytest backend/agents/
 
 ## Performance Benchmarks
 
-| Task | Ollama (GPU) | Ollama (CPU) | Mistral API |
-|------|-------------|-------------|------------|
-| Debug | 3-5s | 10-15s | 1-3s |
-| Analyze | 5-8s | 15-25s | 2-5s |
-| Docs | 4-6s | 12-18s | 1-4s |
-| Tokens/sec | 20-30 | 5-10 | 50-100 |
+| Task       | Ollama (GPU) | Ollama (CPU) | Mistral API |
+| ---------- | ------------ | ------------ | ----------- |
+| Debug      | 3-5s         | 10-15s       | 1-3s        |
+| Analyze    | 5-8s         | 15-25s       | 2-5s        |
+| Docs       | 4-6s         | 12-18s       | 1-4s        |
+| Tokens/sec | 20-30        | 5-10         | 50-100      |
 
 ## Roadmap
 

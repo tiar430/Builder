@@ -5,6 +5,7 @@
 Model Context Protocol (MCP) allows the AI Agent system to connect to external services and databases, extending its capabilities beyond code analysis.
 
 **Integrated MCP Servers:**
+
 - Supabase (Database & Auth)
 - Neon (PostgreSQL Database)
 - Linear (Issue Tracking)
@@ -40,12 +41,15 @@ Model Context Protocol (MCP) allows the AI Agent system to connect to external s
 ## Configuration
 
 ### Enable MCP
+
 ```env
 MCP_ENABLED=true
 ```
 
 ### Disable Specific Clients
+
 Comment out environment variables for unused services:
+
 ```env
 # SUPABASE_URL=  # Disabled
 # SUPABASE_KEY=  # Disabled
@@ -61,17 +65,20 @@ NEON_DATABASE_URL=postgresql://...
 **Purpose:** Database, authentication, real-time subscriptions
 
 **Setup:**
+
 1. Create account at https://supabase.com
 2. Create new project
 3. Get credentials from Settings > API
 
 **Environment Variables:**
+
 ```env
 SUPABASE_URL=https://xxxxx.supabase.co
 SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Usage in Agents:**
+
 ```python
 mcp_manager = MCPClientManager()
 supabase = mcp_manager.get_client('supabase')
@@ -79,6 +86,7 @@ results = await supabase.query('users', filters={'id': 123})
 ```
 
 **Capabilities:**
+
 - User authentication integration
 - Store conversation history
 - Cache analysis results
@@ -91,16 +99,19 @@ results = await supabase.query('users', filters={'id': 123})
 **Purpose:** Managed PostgreSQL database for production
 
 **Setup:**
+
 1. Create account at https://neon.tech
 2. Create new project
 3. Copy connection string
 
 **Environment Variables:**
+
 ```env
 NEON_DATABASE_URL=postgresql://user:password@ep-cool-name.us-east-1.neon.tech/dbname?sslmode=require
 ```
 
 **Usage in Agents:**
+
 ```python
 neon = mcp_manager.get_client('neon')
 result = await neon.execute(
@@ -110,6 +121,7 @@ result = await neon.execute(
 ```
 
 **Schema Setup:**
+
 ```sql
 CREATE TABLE conversation_history (
   id SERIAL PRIMARY KEY,
@@ -137,16 +149,19 @@ CREATE TABLE execution_metrics (
 **Purpose:** Issue tracking, bug reports, feature requests
 
 **Setup:**
+
 1. Create account at https://linear.app
 2. Create workspace and project
 3. Generate API key from Settings > API Keys
 
 **Environment Variables:**
+
 ```env
 LINEAR_API_KEY=lin_api_...
 ```
 
 **Usage in Agents:**
+
 ```python
 linear = mcp_manager.get_client('linear')
 issue = await linear.create_issue(
@@ -158,6 +173,7 @@ issue = await linear.create_issue(
 ```
 
 **Common Tasks:**
+
 - Auto-create bugs from error reports
 - Link analysis results to issues
 - Track performance improvements
@@ -169,17 +185,20 @@ issue = await linear.create_issue(
 **Purpose:** Documentation, knowledge base, notes
 
 **Setup:**
+
 1. Create Notion workspace
 2. Create database for logs/reports
 3. Create integration at https://www.notion.so/my-integrations
 4. Share database with integration
 
 **Environment Variables:**
+
 ```env
 NOTION_API_KEY=secret_abc123xyz...
 ```
 
 **Usage in Agents:**
+
 ```python
 notion = mcp_manager.get_client('notion')
 await notion.create_page(
@@ -190,6 +209,7 @@ await notion.create_page(
 ```
 
 **Common Tasks:**
+
 - Store generated documentation
 - Create analysis reports
 - Team knowledge sharing
@@ -201,16 +221,19 @@ await notion.create_page(
 **Purpose:** Error monitoring and debugging
 
 **Setup:**
+
 1. Create account at https://sentry.io
 2. Create project for your app
 3. Get DSN from Settings
 
 **Environment Variables:**
+
 ```env
 SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/123
 ```
 
 **Capabilities:**
+
 - Track agent errors
 - Monitor performance
 - Trigger alerts
@@ -222,16 +245,19 @@ SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/123
 **Purpose:** Payment processing, usage tracking
 
 **Setup:**
+
 1. Create account at https://stripe.com
 2. Get API keys from Developers > API Keys
 
 **Environment Variables:**
+
 ```env
 STRIPE_API_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 ```
 
 **Capabilities:**
+
 - Track API usage
 - Implement usage-based billing
 - Manage subscriptions
@@ -275,19 +301,19 @@ class CustomAgent(BaseAgent):
     async def execute(self, context: Dict[str, Any]) -> AgentResponse:
         # Get MCP manager
         mcp_manager = MCPClientManager()
-        
+
         # Get Neon client
         neon = mcp_manager.get_client('neon')
-        
+
         # Store results in database
         if neon and await neon.is_available():
             await neon.execute(
-                """INSERT INTO analysis_results 
-                   (session_id, agent_type, result) 
+                """INSERT INTO analysis_results
+                   (session_id, agent_type, result)
                    VALUES ($1, $2, $3)""",
                 [session_id, 'custom', result]
             )
-        
+
         return await self.create_response(
             success=True,
             result='Analysis complete'
@@ -302,7 +328,7 @@ class CustomAgent(BaseAgent):
 try:
     # Connect to MCP service
     status = await manager.connect_all()
-    
+
     if not status.get('neon'):
         logger.warning("Neon database not available")
         # Fall back to SQLite
@@ -398,6 +424,7 @@ RATE_LIMIT_MCP=100  # requests per minute
 ## Future MCP Services
 
 Planned integrations:
+
 - GitHub (code repository integration)
 - Slack (notifications)
 - Discord (team communication)
@@ -420,6 +447,7 @@ Planned integrations:
 ## Support
 
 For MCP integration issues:
+
 1. Check `.env` configuration
 2. Verify API credentials
 3. Test service connectivity

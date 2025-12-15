@@ -1,11 +1,13 @@
 # API Documentation
 
 ## Base URL
+
 ```
 http://localhost:8000
 ```
 
 ## Authentication
+
 No authentication required for local setup. For production, implement API key authentication.
 
 ---
@@ -13,9 +15,11 @@ No authentication required for local setup. For production, implement API key au
 ## Health & Status Endpoints
 
 ### GET /health
+
 Health check endpoint.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -29,9 +33,11 @@ Health check endpoint.
 ```
 
 ### GET /health/models
+
 List available LLM models.
 
 **Response:**
+
 ```json
 [
   {
@@ -50,9 +56,11 @@ List available LLM models.
 ```
 
 ### GET /agent/mcp-status
+
 Get MCP clients status.
 
 **Response:**
+
 ```json
 {
   "enabled": true,
@@ -70,9 +78,11 @@ Get MCP clients status.
 ## Agent Endpoints
 
 ### POST /agent/debug
+
 Debug code and identify issues.
 
 **Request Body:**
+
 ```json
 {
   "code": "def add(a, b)\n  return a + b",
@@ -83,9 +93,11 @@ Debug code and identify issues.
 ```
 
 **Query Parameters:**
+
 - `session_id` (optional): Session identifier for history
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -110,9 +122,11 @@ Debug code and identify issues.
 ---
 
 ### POST /agent/analyze
+
 Analyze code for quality, security, or performance.
 
 **Request Body:**
+
 ```json
 {
   "code": "SELECT * FROM users WHERE id = 1",
@@ -123,12 +137,14 @@ Analyze code for quality, security, or performance.
 ```
 
 **Analysis Types:**
+
 - `security`: Vulnerability detection, data handling, API security
 - `performance`: Bottlenecks, complexity, optimization
 - `quality`: Structure, readability, best practices
 - `comprehensive`: All of the above (default)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -156,9 +172,11 @@ Analyze code for quality, security, or performance.
 ---
 
 ### POST /agent/generate-docs
+
 Generate documentation for code.
 
 **Request Body:**
+
 ```json
 {
   "code": "def factorial(n):\n  if n <= 1:\n    return 1\n  return n * factorial(n-1)",
@@ -169,17 +187,20 @@ Generate documentation for code.
 ```
 
 **Doc Types:**
+
 - `function`: Function documentation
 - `class`: Class documentation
 - `module`: Module documentation
 - `api`: API endpoint documentation
 
 **Styles:**
+
 - `google`: Google-style docstrings
 - `numpy`: NumPy-style docstrings
 - `sphinx`: Sphinx/RST style
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -200,9 +221,11 @@ Generate documentation for code.
 ---
 
 ### POST /agent/orchestrate
+
 Execute multiple tasks in sequence or parallel.
 
 **Request Body:**
+
 ```json
 {
   "session_id": "user-123",
@@ -235,11 +258,13 @@ Execute multiple tasks in sequence or parallel.
 ```
 
 **Task Types:**
+
 - `debugger`: Debug code
 - `analyzer`: Analyze code
 - `docs_generator`: Generate documentation
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -273,12 +298,15 @@ Execute multiple tasks in sequence or parallel.
 ## History Endpoints
 
 ### GET /agent/history/{session_id}
+
 Get conversation history for a session.
 
 **Query Parameters:**
+
 - `limit`: Maximum number of entries (default: 50)
 
 **Response:**
+
 ```json
 [
   {
@@ -299,9 +327,11 @@ Get conversation history for a session.
 ---
 
 ### DELETE /agent/history/{session_id}
+
 Clear conversation history for a session.
 
 **Response:**
+
 ```json
 {
   "status": "cleared"
@@ -311,12 +341,15 @@ Clear conversation history for a session.
 ---
 
 ### GET /agent/execution-stats/{session_id}
+
 Get execution statistics.
 
 **Query Parameters:**
+
 - `days`: Number of days to analyze (default: 7)
 
 **Response:**
+
 ```json
 {
   "total_executions": 45,
@@ -332,14 +365,17 @@ Get execution statistics.
 ## WebSocket Endpoint
 
 ### WS /agent/ws/agent
+
 Real-time agent interaction via WebSocket.
 
 **Connection:**
+
 ```javascript
-const ws = new WebSocket('ws://localhost:8000/agent/ws/agent');
+const ws = new WebSocket("ws://localhost:8000/agent/ws/agent");
 ```
 
 **Send Message:**
+
 ```json
 {
   "agent_type": "debugger",
@@ -353,6 +389,7 @@ const ws = new WebSocket('ws://localhost:8000/agent/ws/agent');
 ```
 
 **Receive Response:**
+
 ```json
 {
   "success": true,
@@ -364,27 +401,30 @@ const ws = new WebSocket('ws://localhost:8000/agent/ws/agent');
 ```
 
 **Example (JavaScript):**
+
 ```javascript
-const ws = new WebSocket('ws://localhost:8000/agent/ws/agent');
+const ws = new WebSocket("ws://localhost:8000/agent/ws/agent");
 
 ws.onopen = () => {
-  ws.send(JSON.stringify({
-    agent_type: 'debugger',
-    session_id: 'user-123',
-    context: {
-      code: 'def foo():\n  return bar()',
-      language: 'python'
-    }
-  }));
+  ws.send(
+    JSON.stringify({
+      agent_type: "debugger",
+      session_id: "user-123",
+      context: {
+        code: "def foo():\n  return bar()",
+        language: "python",
+      },
+    }),
+  );
 };
 
 ws.onmessage = (event) => {
   const response = JSON.parse(event.data);
-  console.log('Agent response:', response);
+  console.log("Agent response:", response);
 };
 
 ws.onerror = (error) => {
-  console.error('WebSocket error:', error);
+  console.error("WebSocket error:", error);
 };
 ```
 
@@ -401,6 +441,7 @@ All endpoints return appropriate HTTP status codes:
 - `503 Service Unavailable`: Service (Ollama/API) unavailable
 
 **Error Response Format:**
+
 ```json
 {
   "success": false,
@@ -428,6 +469,7 @@ All endpoints return appropriate HTTP status codes:
 ## Examples
 
 ### Python Client
+
 ```python
 import httpx
 
@@ -446,18 +488,20 @@ async def debug_code(code: str, language: str):
 ```
 
 ### JavaScript Fetch
+
 ```javascript
 const debugCode = async (code, language) => {
-  const response = await fetch('http://localhost:8000/agent/debug', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code, language })
+  const response = await fetch("http://localhost:8000/agent/debug", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code, language }),
   });
   return response.json();
 };
 ```
 
 ### cURL
+
 ```bash
 curl -X POST http://localhost:8000/agent/debug \
   -H "Content-Type: application/json" \
@@ -472,6 +516,7 @@ curl -X POST http://localhost:8000/agent/debug \
 ## API Docs
 
 Interactive API documentation available at:
+
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
@@ -480,6 +525,7 @@ Interactive API documentation available at:
 ## Rate Limits (Future)
 
 Planned rate limiting configuration:
+
 ```env
 RATE_LIMIT_ENABLED=true
 RATE_LIMIT_REQUESTS_PER_MINUTE=100

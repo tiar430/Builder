@@ -1,6 +1,7 @@
 # Installation & Setup Guide
 
 ## Table of Contents
+
 1. [System Requirements](#system-requirements)
 2. [Installation Methods](#installation-methods)
 3. [Configuration](#configuration)
@@ -10,12 +11,14 @@
 ## System Requirements
 
 ### Minimum Requirements
+
 - Python 3.11+
 - 4GB RAM
 - 2GB free disk space
 - Internet connection (for cloud APIs)
 
 ### Recommended Setup
+
 - Python 3.11 or 3.12
 - 8GB+ RAM (for local LLM)
 - GPU (NVIDIA, AMD, or Apple Silicon) for faster inference
@@ -23,6 +26,7 @@
 - Linux, macOS, or WSL2 on Windows
 
 ### GPU Support (Optional)
+
 - **NVIDIA**: CUDA 11.8+ with cuDNN
 - **AMD**: ROCm 5.5+
 - **Apple**: Metal GPU support (automatic)
@@ -45,6 +49,7 @@ chmod +x scripts/setup.sh
 ```
 
 The setup script will:
+
 - Check Python version
 - Create virtual environment
 - Install dependencies
@@ -95,6 +100,7 @@ cp .env.example .env
 ### Step 2: Configure Local AI (Ollama)
 
 **Install Ollama:**
+
 ```bash
 # macOS
 brew install ollama
@@ -111,6 +117,7 @@ docker run -d -p 11434:11434 ollama/ollama
 ```
 
 **Pull a model:**
+
 ```bash
 ollama pull mistral
 
@@ -121,6 +128,7 @@ ollama pull codellama
 ```
 
 **Configure in .env:**
+
 ```env
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=mistral
@@ -129,6 +137,7 @@ OLLAMA_MODEL=mistral
 ### Step 3: Configure Cloud API (Optional)
 
 **Get Mistral API Key:**
+
 1. Visit https://console.mistral.ai
 2. Create account or sign in
 3. Generate API key
@@ -142,11 +151,13 @@ MISTRAL_MODEL=mistral-small
 ### Step 4: Configure Database (Optional)
 
 **Default (SQLite):**
+
 ```env
 DATABASE_URL=sqlite:///./agent_db.sqlite
 ```
 
 **PostgreSQL (Production):**
+
 ```env
 DATABASE_URL=postgresql://user:password@localhost/agent_db
 ```
@@ -154,22 +165,26 @@ DATABASE_URL=postgresql://user:password@localhost/agent_db
 ### Step 5: Configure MCP Services (Optional)
 
 **Supabase:**
+
 ```env
 SUPABASE_URL=https://xxxxx.supabase.co
 SUPABASE_KEY=eyJxxx...
 ```
 
 **Neon Database:**
+
 ```env
 NEON_DATABASE_URL=postgresql://user:password@region.neon.tech/dbname
 ```
 
 **Linear:**
+
 ```env
 LINEAR_API_KEY=your_api_key
 ```
 
 **Notion:**
+
 ```env
 NOTION_API_KEY=your_api_key
 ```
@@ -199,6 +214,7 @@ python -c "from backend.database import init_db; init_db(); print('Database OK')
 ### Start Services
 
 **Terminal 1 - Backend:**
+
 ```bash
 source venv/bin/activate
 python -m backend.main
@@ -208,6 +224,7 @@ python -m backend.main
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 source venv/bin/activate
 chainlit run frontend/app.py
@@ -217,6 +234,7 @@ chainlit run frontend/app.py
 ```
 
 **Terminal 3 - Ollama (if not already running):**
+
 ```bash
 ollama serve
 ```
@@ -224,6 +242,7 @@ ollama serve
 ### Access the Application
 
 Open browser and navigate to:
+
 - Frontend: http://localhost:8501
 - API: http://localhost:8000
 - API Docs: http://localhost:8000/docs
@@ -251,6 +270,7 @@ curl -X POST http://localhost:8000/agent/debug \
 ### Python Issues
 
 **"Python 3.11+ not found"**
+
 ```bash
 # Install Python 3.11
 # macOS
@@ -266,12 +286,14 @@ python3.11 -m venv venv
 ### Virtual Environment Issues
 
 **"source: command not found"**
+
 ```bash
 # You're on Windows, use:
 venv\Scripts\activate
 ```
 
 **"Permission denied"**
+
 ```bash
 chmod +x venv/bin/activate
 source venv/bin/activate
@@ -280,6 +302,7 @@ source venv/bin/activate
 ### Ollama Issues
 
 **"Connection refused to http://localhost:11434"**
+
 ```bash
 # Start Ollama
 ollama serve
@@ -289,6 +312,7 @@ ps aux | grep ollama
 ```
 
 **"Failed to load model"**
+
 ```bash
 # Check model is installed
 ollama list
@@ -303,6 +327,7 @@ ollama run mistral "Say hello"
 ### Database Issues
 
 **"database is locked"**
+
 ```bash
 # Remove old database and restart
 rm agent_db.sqlite
@@ -310,6 +335,7 @@ python -m backend.main
 ```
 
 **"psycopg2 import error"**
+
 ```bash
 # Reinstall psycopg2
 pip install --upgrade psycopg2-binary
@@ -318,6 +344,7 @@ pip install --upgrade psycopg2-binary
 ### Dependency Issues
 
 **"ModuleNotFoundError: No module named 'fastapi'"**
+
 ```bash
 # Ensure you're in virtual environment
 source venv/bin/activate
@@ -329,6 +356,7 @@ pip install -r backend/requirements.txt
 ### Memory Issues
 
 **"Out of memory with Ollama"**
+
 ```bash
 # Use smaller model
 ollama pull mistral:7b-text-q4_0
@@ -342,6 +370,7 @@ MISTRAL_API_KEY=your_key
 ### Port Conflicts
 
 **"Address already in use"**
+
 ```bash
 # Change port in .env
 PORT=8001  # Instead of 8000
@@ -353,16 +382,19 @@ lsof -ti:8000 | xargs kill -9
 ## Performance Tuning
 
 ### CPU-Only Setup
+
 - Use smaller models: `mistral:7b-text-q4_0`
 - Reduce max_tokens: `LLM_MAX_TOKENS=1024`
 - Expect: 10-15 tokens/second
 
 ### GPU Setup
+
 - Use full precision models: `mistral`
 - Increase max_tokens: `LLM_MAX_TOKENS=4096`
 - Expect: 50-100 tokens/second
 
 ### Database Optimization
+
 - Use PostgreSQL for production
 - Add indexes for frequently queried fields
 - Enable connection pooling

@@ -1,10 +1,6 @@
 const CACHE_NAME = "ai-agent-v1";
 const API_CACHE = "ai-agent-api-v1";
-const STATIC_ASSETS = [
-  "/",
-  "/index.html",
-  "/manifest.json",
-];
+const STATIC_ASSETS = ["/", "/index.html", "/manifest.json"];
 
 // Install event
 self.addEventListener("install", (event) => {
@@ -13,7 +9,7 @@ self.addEventListener("install", (event) => {
       return cache.addAll(STATIC_ASSETS).catch((err) => {
         console.log("Failed to cache some assets:", err);
       });
-    })
+    }),
   );
   self.skipWaiting();
 });
@@ -27,9 +23,9 @@ self.addEventListener("activate", (event) => {
           if (cacheName !== CACHE_NAME && cacheName !== API_CACHE) {
             return caches.delete(cacheName);
           }
-        })
+        }),
       );
-    })
+    }),
   );
   self.clients.claim();
 });
@@ -45,7 +41,10 @@ self.addEventListener("fetch", (event) => {
   }
 
   // API requests - Network first, with cache fallback
-  if (url.pathname.startsWith("/agent/") || url.pathname.startsWith("/health/")) {
+  if (
+    url.pathname.startsWith("/agent/") ||
+    url.pathname.startsWith("/health/")
+  ) {
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -59,21 +58,24 @@ self.addEventListener("fetch", (event) => {
         .catch(() => {
           // Return cached response on network failure
           return caches.match(request).then((cachedResponse) => {
-            return cachedResponse || new Response(
-              JSON.stringify({
-                error: "Offline - API unavailable",
-                cached: true,
-              }),
-              {
-                status: 503,
-                statusText: "Service Unavailable",
-                headers: { "Content-Type": "application/json" },
-              }
+            return (
+              cachedResponse ||
+              new Response(
+                JSON.stringify({
+                  error: "Offline - API unavailable",
+                  cached: true,
+                }),
+                {
+                  status: 503,
+                  statusText: "Service Unavailable",
+                  headers: { "Content-Type": "application/json" },
+                },
+              )
             );
           });
-        })
+        }),
     );
-  } 
+  }
   // Static assets - Cache first, fallback to network
   else {
     event.respondWith(
@@ -96,7 +98,7 @@ self.addEventListener("fetch", (event) => {
               statusText: "Not Found",
             });
           });
-      })
+      }),
     );
   }
 });
@@ -112,7 +114,7 @@ async function syncPendingTasks() {
   try {
     const db = await openDatabase();
     const tasks = await getAllPendingTasks(db);
-    
+
     for (const task of tasks) {
       try {
         const response = await fetch("/agent/orchestrate", {
@@ -120,7 +122,7 @@ async function syncPendingTasks() {
           body: JSON.stringify(task),
           headers: { "Content-Type": "application/json" },
         });
-        
+
         if (response.ok) {
           await removePendingTask(db, task.id);
         }
@@ -143,10 +145,8 @@ self.addEventListener("push", (event) => {
     tag: "ai-agent-notification",
     requireInteraction: false,
   };
-  
-  event.waitUntil(
-    self.registration.showNotification("AI Agent", options)
-  );
+
+  event.waitUntil(self.registration.showNotification("AI Agent", options));
 });
 
 // Message handler
@@ -160,10 +160,10 @@ self.addEventListener("message", (event) => {
 function openDatabase() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("AIAgentDB", 1);
-    
+
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
-    
+
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
       if (!db.objectStoreNames.contains("pendingTasks")) {
@@ -178,7 +178,7 @@ function getAllPendingTasks(db) {
     const transaction = db.transaction(["pendingTasks"], "readonly");
     const store = transaction.objectStore("pendingTasks");
     const request = store.getAll();
-    
+
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
   });
@@ -189,7 +189,7 @@ function removePendingTask(db, taskId) {
     const transaction = db.transaction(["pendingTasks"], "readwrite");
     const store = transaction.objectStore("pendingTasks");
     const request = store.delete(taskId);
-    
+
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve();
   });
