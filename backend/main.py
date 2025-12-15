@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZIPMiddleware
 from backend.config import settings
 from backend.database import init_db
-from backend.routers import health_router
+from backend.routers import health_router, agent_router
+from backend.mcp import mcp_manager
 
 # Initialize database
 init_db()
