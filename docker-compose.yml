@@ -1,0 +1,138 @@
+version: "3.9"
+
+services:
+  # PostgreSQL Database (Optional)
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai_agent_db
+    environment:
+      POSTGRES_USER: agent_user
+      POSTGRES_PASSWORD: agent_password
+      POSTGRES_DB: agent_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai_agent_network
+    profiles:
+      - db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agent_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Ollama Service (Local LLM)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ai_agent_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - ai_agent_network
+    profiles:
+      - ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API Service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: ai_agent_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=false
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DATABASE_URL=postgresql://agent_user:agent_password@postgres:5432/agent_db
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=mistral
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_KEY=${SUPABASE_KEY:-}
+      - MCP_ENABLED=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend
+    networks:
+      - ai_agent_network
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Service (Chainlit)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: ai_agent_frontend
+    ports:
+      - "8501:8501"
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./frontend:/app/frontend
+    networks:
+      - ai_agent_network
+    command: chainlit run /app/frontend/app.py --host 0.0.0.0 --port 8501
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: ai_agent_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./public:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - ai_agent_network
+
+volumes:
+  postgres_data:
+  ollama_data:
+
+networks:
+  ai_agent_network:
+    driver: bridge
+
+# Profiles:
+# - dev: Backend + Frontend (no database/ollama)
+# - db: Add PostgreSQL database
+# - ollama: Add Ollama service
+# - full: All services
+#
+# Usage:
+# docker-compose --profile dev up
+# docker-compose --profile db --profile ollama --profile dev up
+# docker-compose up -d  # Uses default (all services)
