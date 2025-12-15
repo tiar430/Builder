@@ -17,7 +17,7 @@ from backend.models.request_models import (
     AgentResponse,
     ConversationHistoryEntry,
 )
-from backend.mcp import get_mcp_manager
+from backend.mcp.client_manager import get_mcp_manager
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/agent", tags=["agent"])
