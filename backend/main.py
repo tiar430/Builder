@@ -35,6 +35,27 @@ app.include_router(health_router)
 app.include_router(agent_router)
 
 
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on startup."""
+    logger.info("Initializing AI Agent application...")
+
+    # Initialize LLM service
+    await llm_service.initialize()
+    logger.info("LLM service initialized")
+
+    # Initialize MCP connections
+    mcp_status = await mcp_manager.connect_all()
+    logger.info(f"MCP clients initialized: {mcp_status}")
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup on shutdown."""
+    logger.info("Shutting down AI Agent application...")
+    await mcp_manager.disconnect_all()
+
+
 @app.get("/")
 async def root():
     """Root endpoint."""
