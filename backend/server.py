@@ -81,26 +81,23 @@ def detect_and_align_face(image: Image.Image) -> tuple:
     """Detect face and return bounding box."""
     try:
         img_array = np.array(image.convert('RGB'))
-        results = face_detection.process(img_array)
+        gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
         
-        if results.detections:
-            detection = results.detections[0]
-            bbox = detection.location_data.relative_bounding_box
-            h, w, _ = img_array.shape
-            
-            x = int(bbox.xmin * w)
-            y = int(bbox.ymin * h)
-            width = int(bbox.width * w)
-            height = int(bbox.height * h)
+        # Detect faces
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        
+        if len(faces) > 0:
+            # Get the first face
+            x, y, w, h = faces[0]
             
             # Add margin
             margin = 50
             x = max(0, x - margin)
             y = max(0, y - margin)
-            width = min(w - x, width + 2 * margin)
-            height = min(h - y, height + 2 * margin)
+            w = min(img_array.shape[1] - x, w + 2 * margin)
+            h = min(img_array.shape[0] - y, h + 2 * margin)
             
-            return (x, y, width, height), True
+            return (x, y, w, h), True
         return None, False
     except Exception as e:
         logger.error(f"Face detection error: {e}")
