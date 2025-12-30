@@ -12,7 +12,6 @@ from pathlib import Path
 from PIL import Image
 import numpy as np
 import cv2
-import mediapipe as mp
 from huggingface_hub import InferenceClient
 import logging
 from datetime import datetime
@@ -58,9 +57,8 @@ app.mount("/outputs", StaticFiles(directory=str(OUTPUT_DIR)), name="outputs")
 # Initialize Hugging Face client
 hf_client = InferenceClient(token=HUGGINGFACE_TOKEN)
 
-# Initialize MediaPipe Face Detection
-mp_face_detection = mp.solutions.face_detection
-face_detection = mp_face_detection.FaceDetection(min_detection_confidence=0.5)
+# Load OpenCV face detector
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 # Models
 class GenerateRequest(BaseModel):
