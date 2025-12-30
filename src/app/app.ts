@@ -27,7 +27,7 @@ interface GenerateResponse {
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   standalone: true,
   templateUrl: './app.html',
   styleUrl: './app.css'
